@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excuse Letter</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #2C3E50;
+          
+        font-family: 'Caveat', cursive; 
+        overflow: hidden;
+    }
+    
+        .scene {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 600px;
+            height: 400px;
+        }
+
+        .envelope-back {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #BFA588;
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            z-index: 1;
+        }
+
+        .envelope-front {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 300px solid #D4BDA2;
+            border-right: 300px solid #D4BDA2;
+            border-bottom: 200px solid #E1CEBA;
+            border-top: 200px solid transparent;
+            z-index: 3;
+            border-radius: 0 0 4px 4px;
+            pointer-events: none; 
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 300px solid transparent;
+            border-right: 300px solid transparent;
+            border-top: 220px solid #C9B095;
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2));
+        }
+
+        .envelope-flap.open {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 220px; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px; height: 70px;
+            background: radial-gradient(circle at 30% 30%, #800000, #B20000);
+            border-radius: 50%;
+            z-index: 5;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 -3px 8px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFE6E6;
+            font-family: 'Georgia', serif;
+            font-size: 32px;
+            font-weight: bold;
+            transition: all 0.4s ease;
+        }
+
+        .wax-seal span { text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+        .wax-seal:hover { transform: translate(-50%, -50%) scale(1.1); }
+        
+        .wax-seal.broken {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .letter {
+            position: absolute;
+            top: 10px; left: 5%;
+            width: 90%; height: 95%; 
+            background: #FFFDF5;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 2;
+            padding: 50px;
+            box-sizing: border-box;
+            color: #2C3E50;
+            overflow: hidden;
+            
+            transition: transform 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, left 0.6s ease-in-out, top 0.6s ease-in-out, box-shadow 0.6s ease;
+        }
+
+        .letter.slide-up { transform: translateY(-450px); }
+        .letter.bring-front { z-index: 10; }
+        .letter.expand {
+            transform: translateY(0);
+            width: 140%;          
+            height: 220%;         
+            left: -20%;           
+            top: -240px;          
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+        }
+
+        .right-fold {
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-top: 80px solid #2C3E50; 
+            border-left: 80px solid #C8BCA7; 
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s, border-top-width 0.2s, border-left-width 0.2s;
+            z-index: 20;
+        }
+        
+        .right-fold:hover {
+            border-top-width: 95px;
+            border-left-width: 95px;
+        }
+
+        .letter-content { line-height: 1.5; }
+        
+        .date { 
+            text-align: left;
+            margin-bottom: 20px; 
+            color: #555555; 
+        }
+        
+        .title { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-weight: bold; 
+            font-size: 26px; 
+            letter-spacing: 1px; 
+            border-bottom: 1px solid #CCCCCC; 
+            padding-bottom: 10px; 
+        }
+        
+        .letter p { 
+            margin-bottom: 15px; 
+            text-indent: 30px; 
+            text-align: justify; 
+            font-size: 18px; 
+        }
+        
+        .signature { margin-top: 40px; }
+        
+        .sign-name { 
+            font-size: 24px; 
+            color: #2D2D2D; 
+            display: inline-block; 
+            margin-top: 5px; 
+            font-weight: bold;
+        }
+
+        .ps-note {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #555555;
+            border-top: 1px dashed #CCCCCC;
+            padding-top: 15px;
+        }
+
+        @media (max-width: 700px) { .scene { transform: scale(0.6); } }
+        @media (max-width: 400px) { .scene { transform: scale(0.45); } }
+    </style>
+</head>
+
+<body>
+
+    <div class="scene">
+        <div class="envelope-wrapper" id="envelope">
+            
+            <div class="envelope-back"></div>
+            
+            <div class="letter" id="letter">
+                
+                <div class="right-fold" id="right-fold" onclick="closeEnvelope()" title="Fold back into envelope"></div>
+                
+                <div class="letter-content">
+                    <div class="date">April 30, 2026</div><br>
+                    <p>Dear Sir. Abio,</p>
+                    <p>Greetings! Please accept this letter as a formal notification regarding to my child's absence on April 21, 2026. Unfortunately, my son was entirely unable to attend to his obligations due to the extreme heat crisis that required them to remain home.</p>
+                    <p>We experienced a complete loss of internet connection in my area, which crippled my son's ability to communicate in a timely manner and accomplish his online prerequisites. Furthermore, we encountered an unforeseen fare issue during commute, leaving him unable to secure the necessary transportation.</p>
+                    <p>Due to these successive complications, there's no alternative but to miss their scheduled duties. I deeply apologize for any inconvenience this has caused and kindly request your understanding regarding to this matter.</p>
+                    
+                    <div class="signature">
+                        Sincerely,<br><br>
+
+                        <img src="Signature.png" alt="Signature of Roselyn" style="max-height: 60px; margin-top: 5px; display: block;">
+                    </div>
+                    
+                        <span class="sign-name">Roselyn M. Lumabas</span><br>
+                        
+                    <p class="ps-note">
+                        P.S. Please return this letter by clicking the folded right tip at the top corner to put it back into the envelope. Thank you!
+                    </p>
+                </div>
+            </div>
+            
+            <div class="envelope-front"></div>
+            <div class="envelope-flap" id="flap"></div>
+            
+            <div class="wax-seal" id="wax" onclick="openEnvelope()" title="Break Seal">
+                <span>BJ</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const letter = document.getElementById('letter');
+        const flap = document.getElementById('flap');
+        const wax = document.getElementById('wax');
+        const foldBtn = document.getElementById('right-fold');
+
+        function openEnvelope() {
+            wax.classList.add('broken');
+            flap.classList.add('open');
+            
+            setTimeout(() => {
+                letter.classList.add('slide-up');
+            }, 600);
+
+            setTimeout(() => {
+                letter.classList.add('bring-front');
+                letter.classList.add('expand');
+                
+                setTimeout(() => {
+                    foldBtn.style.opacity = '1';
+                    foldBtn.style.pointerEvents = 'auto';
+                }, 600);
+            }, 1200); 
+        }
+
+        function closeEnvelope() {
+            foldBtn.style.opacity = '0';
+            foldBtn.style.pointerEvents = 'none';
+
+            letter.classList.remove('expand');
+            
+            setTimeout(() => {
+                letter.classList.remove('bring-front');
+                letter.classList.remove('slide-up');
+            }, 600);
+
+            setTimeout(() => {
+                flap.classList.remove('open');
+                wax.classList.remove('broken');
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
